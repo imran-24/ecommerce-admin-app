@@ -1,6 +1,6 @@
 import Navbar from "@/components/navbar"
 import prismadb from "@/lib/prismadb"
-import { auth } from "@clerk/nextjs"
+import { auth, redirectToSignIn } from "@clerk/nextjs"
 import { redirect } from "next/navigation"
 
 
@@ -10,7 +10,7 @@ export default async function DashboardLayout({
     params: {storeId: string}}) {
     
     const {userId} = auth()
-    if(!userId) return redirect('/sign-in')
+    if(!userId) return redirectToSignIn()
 
     const store = await prismadb.store.findUnique({
         where:{
