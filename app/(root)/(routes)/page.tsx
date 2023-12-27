@@ -10,7 +10,9 @@ const SetupPage = () => {
     if(!isOpen) onOpen()
   },[isOpen, onOpen])
 
-  return null
+  return (
+    <div>Root page</div>
+  )
 }
 
 export default SetupPage

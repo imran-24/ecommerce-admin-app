@@ -9,13 +9,13 @@ export default async function RootLayout({
     const {userId} = auth()
     if(!userId) return redirect('/sign-in')
 
-    const store = await prismadb.store.findFirst({
-        where:{
-            userId
-        }
-    })
+    // const store = await prismadb.store.findFirst({
+    //     where:{
+    //         userId
+    //     }
+    // })
 
-    if(store?.id) return redirect(`/${store.id}`)
+    // if(store?.id) return redirect(`/${store.id}`)
     return(
         <div>{children}</div>
     )
