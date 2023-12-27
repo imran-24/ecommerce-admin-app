@@ -6,8 +6,8 @@ import { redirect } from "next/navigation"
 export default async function RootLayout({
     children
 }: { children: React.ReactNode}) {
-    const {userId} = auth()
-    if(!userId) return redirect('/sign-in')
+    // const {userId} = auth()
+    // if(!userId) return redirect('/sign-in')
 
     // const store = await prismadb.store.findFirst({
     //     where:{
