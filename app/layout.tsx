@@ -20,20 +20,20 @@ export default function RootLayout({
 }) {
   return (
     <ClerkProvider>
-      <html lang="en">
-      <body className={inter.className}>
-        <ToastProvider />
-        <ModalProvider />
-        <ThemeProvider
+      <html lang="en"  suppressHydrationWarning>
+        <body className={inter.className}>
+          
+          <ThemeProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
-            disableTransitionOnChange
           >
+            <ToastProvider />
+            <ModalProvider />
             {children}
           </ThemeProvider>
-      </body>
-    </html>
+        </body>
+      </html>
     </ClerkProvider>
     
   )

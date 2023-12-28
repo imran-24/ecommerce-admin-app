@@ -18,6 +18,7 @@ export default async function DashboardLayout({
             userId
         }
     })
+    
     if(!store?.id) return redirect('/')
     
     return (
