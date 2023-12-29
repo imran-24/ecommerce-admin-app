@@ -11,7 +11,7 @@ interface AlertModalInterface{
     onConfirm: ()=> void,
     onCancel: ()=> void
 }
-const AlertModal: React.FC<AlertModalInterface> = ({
+export const AlertModal: React.FC<AlertModalInterface> = ({
     isOpen,
     disabled,
     onConfirm,
@@ -51,4 +51,3 @@ const AlertModal: React.FC<AlertModalInterface> = ({
   )
 }
 
-export default AlertModal

@@ -1,25 +1,19 @@
-'use client'
-import React from 'react'
-
-interface HeadingInterface{
-    title: string,
-    description: string
+interface HeadingProps {
+  title: string;
+  description: string;
 }
 
-const Heading: React.FC<HeadingInterface> = ({
-    title,
-    description
+export const Heading: React.FC<HeadingProps> = ({
+  title,
+  description
 }) => {
-  return (
+  return ( 
     <div>
-        <div className='text-3xl font-bold tracking-tighter'>
-            {title}
-        </div>
-        <div className='text-sm text-muted-foreground'>
-            {description}
-        </div>
+      <h2 className="text-3xl font-bold tracking-tight">{title}</h2>
+      <p className="text-sm text-muted-foreground">
+        {description}
+      </p>
     </div>
-  )
-}
-
-export default Heading
+  );
+};
+ 

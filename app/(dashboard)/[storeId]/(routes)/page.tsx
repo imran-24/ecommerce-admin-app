@@ -3,13 +3,13 @@ import { CreditCard, DollarSign, Package } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Overview } from "@/components/overview";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Heading } from "@/components/ui/heading";
 
 import { formatter } from "@/lib/utils";
 import { getTotalRevenue } from "@/action/get-total-revenue";
 import { getGraphRevenue } from "@/action/get-graph-revenue";
 import { getSalesCount } from "@/action/get-sales-count";
 import { getStockCount } from "@/action/get-stock-count";
-import Heading from "@/components/ui/heading";
 
 interface DashboardPageProps {
   params: {
