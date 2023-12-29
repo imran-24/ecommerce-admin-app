@@ -1,8 +1,9 @@
-import React from 'react'
-import SettingsForm from './components/settings-form'
 import { auth } from '@clerk/nextjs'
 import { redirect } from 'next/navigation'
+
 import prismadb from '@/lib/prismadb'
+
+import SettingsForm from './components/settings-form'
 
 const SettingsPage = async({params}: {params: {storeId: string}}) => {
   

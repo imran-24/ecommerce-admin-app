@@ -1,8 +1,9 @@
 'use client'
 
-import React from 'react'
+
 import Modal from '../ui/modal';
 import { Button } from '../ui/button';
+import { useEffect, useState } from 'react';
 
 interface AlertModalInterface{
     isOpen: boolean;
@@ -16,6 +17,14 @@ const AlertModal: React.FC<AlertModalInterface> = ({
     onConfirm,
     onCancel
 }) => {
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(()=>{
+   setIsMounted(true)
+  },[])
+
+  if(!isMounted) return null
+  
   return (
     <Modal
     isOpen={isOpen}

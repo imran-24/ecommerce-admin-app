@@ -37,9 +37,7 @@ interface SettingsFormInterface{
 
 // form schema
 const formSchema = z.object({
-    name: z.string().min(2, {
-      message: "Store must be at least 2 characters.",
-    }),
+    name: z.string().min(2),
   })
  
   
@@ -85,8 +83,8 @@ const SettingsForm: React.FC<SettingsFormInterface> = ({
     }catch(error){
         setLoading(false)
         console.log(error)
-        toast.error("Something went wrong")
-    }finally{
+        toast.error('Make sure you removed all products and categories first.');
+      }finally{
         setLoading(false);
     }
   }
