@@ -4,9 +4,10 @@ import { ClerkProvider } from '@clerk/nextjs'
 
 import './globals.css'
 
-import ToastProvider from '@/providers/toast-provider'
-import ModalProvider from '@/providers/modal-provider'
+
 import { ThemeProvider } from '@/providers/theme-provider'
+import { ToastProvider } from '@/providers/toast-provider'
+import { ModalProvider } from '@/providers/modal-provider'
 
 const inter = Inter({ subsets: ['latin'] })
 
