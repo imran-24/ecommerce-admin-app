@@ -23,9 +23,7 @@ import { useState } from "react"
 import { toast } from "react-hot-toast"
 
 const formSchema = z.object({
-  name: z.string().min(2, {
-    message: "Store name must be at least 2 characters.",
-  }),
+  name: z.string().min(2),
 })
 
 const StoreModal = () => {
@@ -60,10 +58,10 @@ const StoreModal = () => {
 
   return (
     <Modal
-    isOpen={storeModal.isOpen}
-    title='Create store' 
-    description='Add a new store to manage products and categories' 
-    onClose={storeModal.onClose}>
+      isOpen={storeModal.isOpen}
+      title='Create store' 
+      description='Add a new store to manage products and categories' 
+      onClose={storeModal.onClose}>
       <div className='py-2 space-y-4 pb-4'>
       <Form {...form}>
         <form 
@@ -95,8 +93,8 @@ const StoreModal = () => {
               disabled={loading}
               type="submit">
               continue
-              </Button>
-            </div>
+            </Button>
+          </div>
         </form>
       </Form>
       </div>

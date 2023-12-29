@@ -13,7 +13,7 @@ import { ModeToggle } from './toggle-mode'
 const Navbar = async() => {
 
   const {userId} = auth()
-  if(!userId) return redirect('/sing-in')
+  if(!userId) return redirect('/sign-in')
 
   const stores = await prismadb.store.findMany({
     where: {userId: userId},
