@@ -93,7 +93,8 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
 
   return (
     <>
-    <AlertModal 
+    <AlertModal
+     
       isOpen={open} 
       onClose={() => setOpen(false)}
       onConfirm={onDelete}

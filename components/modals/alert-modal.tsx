@@ -7,15 +7,15 @@ import { useEffect, useState } from 'react';
 
 interface AlertModalInterface{
     isOpen: boolean;
-    disabled: boolean; 
+    loading: boolean; 
     onConfirm: ()=> void,
-    onCancel: ()=> void
+    onClose: ()=> void
 }
 export const AlertModal: React.FC<AlertModalInterface> = ({
     isOpen,
-    disabled,
+    loading,
     onConfirm,
-    onCancel
+    onClose
 }) => {
   const [isMounted, setIsMounted] = useState(false)
 
@@ -30,17 +30,17 @@ export const AlertModal: React.FC<AlertModalInterface> = ({
     isOpen={isOpen}
     title='Are you sure?' 
     description='This action cannot be undone.' 
-    onClose={onCancel}>
+    onClose={onClose}>
       <div className='py-2 space-y-4 pb-4'>
         <div className='flex items-center justify-end gap-3'>
             <Button 
-            disabled={disabled}
-            onClick={onCancel}
+            disabled={loading}
+            onClick={onClose}
             variant={'outline'}>
                 Cancel
             </Button>
             <Button 
-            disabled={disabled}
+            disabled={loading}
             onClick={onConfirm}
             variant={'destructive'}>
                 Delete
