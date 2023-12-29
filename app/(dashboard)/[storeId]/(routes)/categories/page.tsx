@@ -1,40 +1,41 @@
-import prismadb from '@/lib/prismadb'
-import { auth } from '@clerk/nextjs'
-import { redirect } from 'next/navigation'
-import React from 'react'
-import CategoriesClient from './components/client'
-import { CategoryColumn } from './components/column'
-import { format } from 'date-fns'
+import { format } from "date-fns";
 
-const CategoriesPage = async({params}: {params: {storeId: string}}) => {
-  const {userId} = auth()
+import prismadb from "@/lib/prismadb";
 
-  if(!userId) return redirect('/sign-in')
+import { CategoryColumn } from "./components/columns"
+import { CategoriesClient } from "./components/client";
+
+const CategoriesPage = async ({
+  params
+}: {
+  params: { storeId: string }
+}) => {
   const categories = await prismadb.category.findMany({
-    where:{
-        storeId: params.storeId,
+    where: {
+      storeId: params.storeId
     },
-    include:{
-        billboard: true
+    include: {
+      billboard: true,
     },
-    orderBy:{
-        createdAt: 'desc'
+    orderBy: {
+      createdAt: 'desc'
     }
-  })
+  });
 
-  const formattedCategory: CategoryColumn[] =  categories.map(category => ({
-    id: category.id,
-    name: category.name,
-    billboardLabel: category.billboard.label,
-    createdAt: format(category.createdAt, "MMMM do, yyyy")
-  }))
+  const formattedCategories: CategoryColumn[] = categories.map((item) => ({
+    id: item.id,
+    name: item.name,
+    billboardLabel: item.billboard.label,
+    createdAt: format(item.createdAt, 'MMMM do, yyyy'),
+  }));
+
   return (
-    <div className='flex-col'>
-        <div className='flex-1 space-y-4 p-8 pt-6'>
-            <CategoriesClient  data={formattedCategory}/>
-        </div>
+    <div className="flex-col">
+      <div className="flex-1 space-y-4 p-8 pt-6">
+        <CategoriesClient data={formattedCategories} />
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default CategoriesPage
+export default CategoriesPage;

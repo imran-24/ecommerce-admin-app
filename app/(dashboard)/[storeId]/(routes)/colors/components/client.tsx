@@ -1,50 +1,39 @@
-'use client'
-import { Button } from '@/components/ui/button'
-import Heading from '@/components/ui/heading'
-import { Separator } from '@/components/ui/separator'
-import { Plus } from 'lucide-react'
-import { useParams, useRouter } from 'next/navigation'
-import React from 'react'
-import { ColorsColumn, columns } from './column'
-import { DataTable } from '@/components/ui/data-table'
-import ApiList from '@/components/ui/api-list'
+"use client";
 
-interface ColorClientInterface{
-    data: ColorsColumn[]
+import { Plus } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+
+import { Button } from "@/components/ui/button";
+import { DataTable } from "@/components/ui/data-table";
+import { Heading } from "@/components/ui/heading";
+import { Separator } from "@/components/ui/separator";
+import { ApiList } from "@/components/ui/api-list";
+
+import { columns, ColorColumn } from "./columns";
+
+interface ColorClientProps {
+  data: ColorColumn[];
 }
-const SizeClient: React.FC<ColorClientInterface> = ({
-    data
+
+export const ColorClient: React.FC<ColorClientProps> = ({
+  data
 }) => {
-  const router = useRouter()
-  const params = useParams()
+  const params = useParams();
+  const router = useRouter();
+
   return (
     <>
-    <div className='flex items-center justify-between'>
-        <Heading
-        title={`Colors(${data.length})`}
-        subtitle='Manage colors for your store' />
-        <Button
-        onClick={()=> router.push(`/${params.storeId}/colors/new`)}
-        >
-            <Plus className='w-4 h-4 mr-2' />
-            Add new
+      <div className="flex items-center justify-between">
+        <Heading title={`Colors (${data.length})`} description="Manage colors for your products" />
+        <Button onClick={() => router.push(`/${params.storeId}/colors/new`)}>
+          <Plus className="mr-2 h-4 w-4" /> Add New
         </Button>
-    </div>
-    <Separator />
-      <div>
-        <DataTable searchKey={'name'} columns={columns} data={data} />
       </div>
-      <Heading 
-      title='API'
-      subtitle='API calls for Size'
-      />
       <Separator />
-      <ApiList 
-      entityName="colors"
-      entityIdName="colorId"/>
-
+      <DataTable searchKey="name" columns={columns} data={data} />
+      <Heading title="API" description="API Calls for Colors" />
+      <Separator />
+      <ApiList entityName="colors" entityIdName="colorId" />
     </>
-  )
-}
-
-export default SizeClient
+  );
+};

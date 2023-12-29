@@ -1,62 +1,52 @@
+import { format } from "date-fns";
 
-import prismadb from '@/lib/prismadb'
-import { auth } from '@clerk/nextjs'
-import { redirect } from 'next/navigation'
-import React from 'react'
-import OrderClient from './components/OrderClient'
-import { OrderColumn } from './components/columns'
-import {format } from 'date-fns'
-import { formatter } from '@/lib/utils'
+import prismadb from "@/lib/prismadb";
+import { formatter } from "@/lib/utils";
 
-const orderPage = async ({params}:{params: {storeId: string}}) => {
-  
-  const {userId} = auth()
-  if(!userId) return redirect('/sign-in')
+import { OrderColumn } from "./components/columns"
+import { OrderClient } from "./components/client";
 
-//   const store = await prismadb.store.findUnique({
-//     where:{
-//         id: params.storeId,
-//         userId
-//     }
-//   })
 
-//   if(!store) return redirect('/')
-  
+const OrdersPage = async ({
+  params
+}: {
+  params: { storeId: string }
+}) => {
   const orders = await prismadb.order.findMany({
-    where:{
-        storeId: params.storeId
+    where: {
+      storeId: params.storeId
     },
-    include:{
-      orderItems:{
-        include:{
+    include: {
+      orderItems: {
+        include: {
           product: true
         }
       }
     },
-    orderBy:{
-        createdAt: 'desc'
+    orderBy: {
+      createdAt: 'desc'
     }
-  })
+  });
 
-  const formatedOrders: OrderColumn[] = orders.map(order => ({
-    id: order.id,
-    isPaid: order.isPaid,
-    phone: order.phone,
-    address: order.address,
-    products: order.orderItems.map(orderItem => orderItem.product.name).join(', '),
-    totalPrice: formatter.format(order.orderItems.reduce((total, orderItem) => { 
-      return total + Number(orderItem.product.price)
+  const formattedOrders: OrderColumn[] = orders.map((item) => ({
+    id: item.id,
+    phone: item.phone,
+    address: item.address,
+    products: item.orderItems.map((orderItem) => orderItem.product.name).join(', '),
+    totalPrice: formatter.format(item.orderItems.reduce((total, item) => {
+      return total + Number(item.product.price)
     }, 0)),
-    createdAt: format(order.createdAt, "MMMM do, yyyy")
-  }))
+    isPaid: item.isPaid,
+    createdAt: format(item.createdAt, 'MMMM do, yyyy'),
+  }));
 
   return (
-    <div className='flex-col'>
-        <div className='flex-1 space-y-4 p-8 pt-6'>
-        <OrderClient data={formatedOrders}/>
-        </div>
+    <div className="flex-col">
+      <div className="flex-1 space-y-4 p-8 pt-6">
+        <OrderClient data={formattedOrders} />
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default orderPage
+export default OrdersPage;

@@ -1,44 +1,38 @@
-import React from 'react'
-import ColorClient from './components/client'
-import { auth } from '@clerk/nextjs'
-import { redirect } from 'next/navigation'
-import prismadb from '@/lib/prismadb'
-import { format } from 'date-fns'
-import { ColorsColumn } from './components/column'
+import { format } from "date-fns";
 
-const ColorsPage = async({params}: {params: {storeId: string}}) => {
+import prismadb from "@/lib/prismadb";
 
-  const {userId} = auth()
-  if(!userId) return redirect('/sign-in')
-  
-//   const store = await prismadb.store.findUnique({
-//     where:{
-//         id: params.storeId,
-//         userId
-//     }
-//     })
-//   if(!store) return redirect('/')
+import { ColorColumn } from "./components/columns"
+import { ColorClient } from "./components/client";
 
+const ColorsPage = async ({
+  params
+}: {
+  params: { storeId: string }
+}) => {
   const colors = await prismadb.color.findMany({
-    where:{
-        storeId: params.storeId
+    where: {
+      storeId: params.storeId
+    },
+    orderBy: {
+      createdAt: 'desc'
     }
-  })
+  });
 
-  const formatedColors: ColorsColumn[] = colors.map(color => ({
-    id: color.id,
-    name: color.name,
-    value: color.value,
-    createdAt: format(color.createdAt, "MMMM do, yyyy")
-  }))
-  
+  const formattedColors: ColorColumn[] = colors.map((item) => ({
+    id: item.id,
+    name: item.name,
+    value: item.value,
+    createdAt: format(item.createdAt, 'MMMM do, yyyy'),
+  }));
+
   return (
-    <div className='flex-col'>
-        <div className='flex-1 space-y-4 p-8 pt-6'>
-            <ColorClient data={formatedColors}/>
-        </div>
+    <div className="flex-col">
+      <div className="flex-1 space-y-4 p-8 pt-6">
+        <ColorClient data={formattedColors} />
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default ColorsPage
+export default ColorsPage;

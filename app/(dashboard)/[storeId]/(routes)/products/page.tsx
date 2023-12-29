@@ -1,29 +1,29 @@
-import React from 'react'
-import { auth } from '@clerk/nextjs'
-import { redirect } from 'next/navigation'
-import prismadb from '@/lib/prismadb'
-import { formatter } from '@/lib/utils'
-import { format } from 'date-fns'
-import { ProductColumn } from './components/column'
-import ProductsClient from './components/client'
+import { format } from "date-fns";
 
-const ProductsPage = async({params}: {params: {storeId: string}}) => {
-  const {userId} = auth()
-  if(!userId) return redirect('/sign-in')
+import prismadb from "@/lib/prismadb";
+import { formatter } from "@/lib/utils";
 
+import { ProductsClient } from "./components/client";
+import { ProductColumn } from "./components/columns";
+
+const ProductsPage = async ({
+  params
+}: {
+  params: { storeId: string }
+}) => {
   const products = await prismadb.product.findMany({
-    where:{
+    where: {
       storeId: params.storeId
     },
-    include:{
+    include: {
       category: true,
       size: true,
-      color: true
+      color: true,
     },
-    orderBy:{
-      createdAt: "desc"
+    orderBy: {
+      createdAt: 'desc'
     }
-  })
+  });
 
   const formattedProducts: ProductColumn[] = products.map((item) => ({
     id: item.id,
@@ -46,4 +46,4 @@ const ProductsPage = async({params}: {params: {storeId: string}}) => {
   );
 };
 
-export default ProductsPage
+export default ProductsPage;

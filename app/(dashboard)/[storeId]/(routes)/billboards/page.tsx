@@ -1,48 +1,37 @@
+import { format } from "date-fns";
 
-import prismadb from '@/lib/prismadb'
-import { auth } from '@clerk/nextjs'
-import { redirect } from 'next/navigation'
-import React from 'react'
-import BillboardClient from './components/BillboardClient'
-import { BillboardColumn } from './components/columns'
-import {format } from 'date-fns'
+import prismadb from "@/lib/prismadb";
 
-const BillboardPage = async ({params}:{params: {storeId: string}}) => {
-  
-  const {userId} = auth()
-  if(!userId) return redirect('/sign-in')
+import { BillboardColumn } from "./components/columns"
+import { BillboardClient } from "./components/client";
 
-//   const store = await prismadb.store.findUnique({
-//     where:{
-//         id: params.storeId,
-//         userId
-//     }
-//   })
-
-//   if(!store) return redirect('/')
-  
+const BillboardsPage = async ({
+  params
+}: {
+  params: { storeId: string }
+}) => {
   const billboards = await prismadb.billboard.findMany({
-    where:{
-        storeId: params.storeId
+    where: {
+      storeId: params.storeId
     },
-    orderBy:{
-        createdAt: 'desc'
+    orderBy: {
+      createdAt: 'desc'
     }
-  })
+  });
 
-  const formatedBillboards: BillboardColumn[] = billboards.map(billboard => ({
-    id: billboard.id,
-    label: billboard.label,
-    createdAt: format(billboard.createdAt, "MMMM do, yyyy")
-  }))
+  const formattedBillboards: BillboardColumn[] = billboards.map((item) => ({
+    id: item.id,
+    label: item.label,
+    createdAt: format(item.createdAt, 'MMMM do, yyyy'),
+  }));
 
   return (
-    <div className='flex-col'>
-        <div className='flex-1 space-y-4 p-8 pt-6'>
-        <BillboardClient data={formatedBillboards}/>
-        </div>
+    <div className="flex-col">
+      <div className="flex-1 space-y-4 p-8 pt-6">
+        <BillboardClient data={formattedBillboards} />
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default BillboardPage
+export default BillboardsPage;

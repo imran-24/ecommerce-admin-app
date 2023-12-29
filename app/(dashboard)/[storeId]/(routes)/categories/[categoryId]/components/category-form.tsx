@@ -1,204 +1,164 @@
-'use client'
+"use client"
 
-import { Billboard, Category } from '@prisma/client'
-import React, { useState } from 'react'
-
-import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { useForm } from 'react-hook-form'
-import { Trash } from 'lucide-react'
+import axios from "axios"
+import { useState } from "react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { toast } from "react-hot-toast"
+import { Trash } from "lucide-react"
+import { Billboard, Category } from "@prisma/client"
+import { useParams, useRouter } from "next/navigation"
 
+import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-  } from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
-import Heading from '@/components/ui/heading'
-import { Separator } from '@/components/ui/separator'
-import AlertModal from '@/components/modals/alert-modal'
+import { Separator } from "@/components/ui/separator"
+import { Heading } from "@/components/ui/heading"
+import { AlertModal } from "@/components/modals/alert-modal"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
-import axios from 'axios'
-import { useParams } from 'next/navigation'
-import { useRouter } from 'next/navigation'
-import toast from 'react-hot-toast'
-import prismadb from '@/lib/prismadb'
-
-
-
-interface CategoryformInterface{
-    initialData: Category | null,
-    billboards: Billboard[]
-}
-
-// form schema
 const formSchema = z.object({
-    name: z.string().min(2),
-    billboardId: z.string().min(2),
-  })
+  name: z.string().min(2),
+  billboardId: z.string().min(1),
+});
 
-const CategoryForm: React.FC<CategoryformInterface> = ({
-    initialData,
-    billboards
+type CategoryFormValues = z.infer<typeof formSchema>
+
+interface CategoryFormProps {
+  initialData: Category | null;
+  billboards: Billboard[];
+};
+
+export const CategoryForm: React.FC<CategoryFormProps> = ({
+  initialData,
+  billboards
 }) => {
-  
-   // 1. Define your form.
-   const form = useForm<z.infer<typeof formSchema>>({
+  const params = useParams();
+  const router = useRouter();
+
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const title = initialData ? 'Edit category' : 'Create category';
+  const description = initialData ? 'Edit a category.' : 'Add a new category';
+  const toastMessage = initialData ? 'Category updated.' : 'Category created.';
+  const action = initialData ? 'Save changes' : 'Create';
+
+  const form = useForm<CategoryFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
       name: '',
-      billboardId: ''
+      billboardId: '',
     }
-    })
+  });
 
-  const [loading, setLoading] = useState(false)
-  const [open, setOpen] = useState(false)
-  const params = useParams()
-  const router = useRouter()
-
-  
-  const onDelete = async() =>{
-    try{
-        setLoading(true)
-        const response = await axios.delete(`/api/${params.storeId}/categories/${initialData?.id}`)
-        router.refresh()
-        toast.success("Categories deleted")
-        router.push(`/${params.storeId}/categories`)
-    }catch(error){
-        setLoading(false)
-        toast.error("Something went wrong")
-    }finally{
-        setLoading(false)
+  const onSubmit = async (data: CategoryFormValues) => {
+    try {
+      setLoading(true);
+      if (initialData) {
+        await axios.patch(`/api/${params.storeId}/categories/${params.categoryId}`, data);
+      } else {
+        await axios.post(`/api/${params.storeId}/categories`, data);
+      }
+      router.refresh();
+      router.push(`/${params.storeId}/categories`);
+      toast.success(toastMessage);
+    } catch (error: any) {
+      toast.error('Something went wrong.');
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
-  // 2. Define a submit handler.
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    try{
-        setLoading(true);
-        if(initialData){
-          const response = await axios.patch(`/api/${params.storeId}/categories/${params.categoryId}`, values)
-        }else{
-          const response = await axios.post(`/api/${params.storeId}/categories`, values)
-        }       
-        router.push(`/${params.storeId}/categories`)
-        toast.success(toastMessage);
-        router.refresh()
-    }catch(error){
-        setLoading(false)
-        console.log(error)
-        toast.error("Something went wrong")
-    }finally{
-        setLoading(false);
+  const onDelete = async () => {
+    try {
+      setLoading(true);
+      await axios.delete(`/api/${params.storeId}/categories/${params.categoryId}`);
+      router.refresh();
+      router.push(`/${params.storeId}/categories`);
+      toast.success('Category deleted.');
+    } catch (error: any) {
+      toast.error('Make sure you removed all products using this category first.');
+    } finally {
+      setLoading(false);
+      setOpen(false);
     }
   }
-
-  const title = initialData ? "Edit Category" : "Create Category"
-  const subtitle = initialData ? "Edit this Category" : "Create a new category"
-  const toastMessage = initialData ? "Category updated" : "Category created"
-  const actionLabel = initialData ? "Save changes" : "Create"
 
   return (
     <>
-    <AlertModal
-    isOpen={open}
-    disabled={loading}
-    onCancel={()=> setOpen(false)}
-    onConfirm={onDelete}
+    <AlertModal 
+      isOpen={open} 
+      onClose={() => setOpen(false)}
+      onConfirm={onDelete}
+      loading={loading}
     />
-    <div className='flex items-center justify-between'>
-        <Heading 
-        title={title}
-        subtitle={subtitle}
-        />
-        {initialData && 
-        <Button
-        size='icon'
-        onClick={()=> setOpen(true)}
-        variant='destructive'>
-            <Trash className='h-4 w-4' />
-        </Button>}
-    </div>
-    <Separator />
-    <div className='py-2 space-y-4 pb-4'>
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-      
-      <div className='grid grid-cols-3 gap-8'>
-        
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Name</FormLabel>
-              <FormControl>
-                <Input  
-                disabled={loading}
-                placeholder="Category name" 
-                {...field} />
-              </FormControl>
-              <FormDescription>
-              Type a unique name for the category
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="billboardId"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Billboard</FormLabel>
-              <Select 
-              onValueChange={field.onChange} 
-              defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a billboard" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                    {
-                        billboards.map(billboard => (
-                            <SelectItem 
-                            key={billboard.id}
-                            value={billboard.id}>
-                                {billboard.label}
-                            </SelectItem>
-                        ))
-                    }                  
-                </SelectContent>
-              </Select>
-              
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        </div>
-        <Button 
-        disabled={loading}
-        type="submit">
-          {actionLabel}
-        </Button>
-      </form>
-    </Form>
-    </div>
+     <div className="flex items-center justify-between">
+        <Heading title={title} description={description} />
+        {initialData && (
+          <Button
+            disabled={loading}
+            variant="destructive"
+            size="sm"
+            onClick={() => setOpen(true)}
+          >
+            <Trash className="h-4 w-4" />
+          </Button>
+        )}
+      </div>
+      <Separator />
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full">
+          <div className="md:grid md:grid-cols-3 gap-8">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input disabled={loading} placeholder="Category name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="billboardId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Billboard</FormLabel>
+                  <Select disabled={loading} onValueChange={field.onChange} value={field.value} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue defaultValue={field.value} placeholder="Select a billboard" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {billboards.map((billboard) => (
+                        <SelectItem key={billboard.id} value={billboard.id}>{billboard.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <Button disabled={loading} className="ml-auto" type="submit">
+            {action}
+          </Button>
+        </form>
+      </Form>
     </>
-  )
-}
-
-export default CategoryForm
+  );
+};

@@ -1,50 +1,40 @@
-'use client'
+"use client";
 
-import { Button } from '@/components/ui/button'
-import Heading from '@/components/ui/heading'
-import { Plus } from 'lucide-react'
-import { useParams, useRouter } from 'next/navigation'
-import React from 'react'
-import { CategoryColumn, columns } from './column'
-import { Separator } from '@/components/ui/separator'
-import { DataTable } from '@/components/ui/data-table'
-import ApiList from '@/components/ui/api-list'
+import { Plus } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
 
-interface CategoriesClientInterface{
-    data: CategoryColumn[] 
+import { Button } from "@/components/ui/button";
+import { DataTable } from "@/components/ui/data-table";
+import { Heading } from "@/components/ui/heading";
+import { Separator } from "@/components/ui/separator";
+import { ApiAlert } from "@/components/ui/api-alert";
+
+import { columns, CategoryColumn } from "./columns";
+import { ApiList } from "@/components/ui/api-list";
+
+interface CategoriesClientProps {
+  data: CategoryColumn[];
 }
-const CategoriesClient: React.FC<CategoriesClientInterface> = ({
-    data
+
+export const CategoriesClient: React.FC<CategoriesClientProps> = ({
+  data
 }) => {
-  const router = useRouter()
-  const params = useParams()
+  const params = useParams();
+  const router = useRouter();
 
   return (
     <>
-        <div className='flex items-center justify-between'>
-            <Heading
-            title={`Category(${data.length})`}
-            subtitle='Manage category for your store' />
-            <Button
-            onClick={()=> router.push(`/${params.storeId}/categories/new`)}>
-                <Plus className='h-4 w-4 mr-2' />
-                Add new 
-            </Button>
-        </div>
-        <Separator /> 
-        <div>
-            <DataTable searchKey={'name'} columns={columns} data={data} />
-        </div>
-        <Heading 
-        title='API'
-        subtitle='API calls for Billboards'
-        />
-        <Separator />
-        <ApiList 
-        entityName="categories"
-        entityIdName="categoryId"/>
+      <div className="flex items-center justify-between">
+        <Heading title={`Categories (${data.length})`} description="Manage categories for your store" />
+        <Button onClick={() => router.push(`/${params.storeId}/categories/new`)}>
+          <Plus className="mr-2 h-4 w-4" /> Add New
+        </Button>
+      </div>
+      <Separator />
+      <DataTable searchKey="name" columns={columns} data={data} />
+      <Heading title="API" description="API Calls for Categories" />
+      <Separator />
+      <ApiList entityName="categories" entityIdName="categoryId" />
     </>
-  )
-}
-
-export default CategoriesClient
+  );
+};

@@ -22,12 +22,11 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Separator } from "@/components/ui/separator"
-
+import { Heading } from "@/components/ui/heading"
+import { AlertModal } from "@/components/modals/alert-modal"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import ImageUpload from "@/components/ui/image-upload"
 import { Checkbox } from "@/components/ui/checkbox"
-import AlertModal from "@/components/modals/alert-modal"
-import Heading from "@/components/ui/heading"
 
 const formSchema = z.object({
   name: z.string().min(1),
@@ -124,12 +123,12 @@ export const ProductForm: React.FC<ProductFormProps> = ({
     <>
     <AlertModal 
       isOpen={open} 
-      onCancel={() => setOpen(false)}
+      onClose={() => setOpen(false)}
       onConfirm={onDelete}
-      disabled={loading}
+      loading={loading}
     />
      <div className="flex items-center justify-between">
-        <Heading title={title} subtitle={description} />
+        <Heading title={title} description={description} />
         {initialData && (
           <Button
             disabled={loading}
@@ -152,10 +151,10 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                 <FormLabel>Images</FormLabel>
                 <FormControl>
                   <ImageUpload 
-                    values={field.value.map((image) => image.url)} 
+                    value={field.value.map((image) => image.url)} 
                     disabled={loading} 
                     onChange={(url) => field.onChange([...field.value, { url }])}
-                    onCancel={(url: string) => field.onChange([...field.value.filter((current) => current.url !== url)])}
+                    onRemove={(url) => field.onChange([...field.value.filter((current) => current.url !== url)])}
                   />
                 </FormControl>
                 <FormMessage />
