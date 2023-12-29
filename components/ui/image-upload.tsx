@@ -1,90 +1,79 @@
-'use client'
+"use client";
 
 import { CldUploadWidget } from 'next-cloudinary';
-import { Button } from './button';
-import { ImagePlus, Trash } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { useCallback } from 'react';
+import { useEffect, useState } from 'react';
+
+import { Button } from '@/components/ui/button';
 import Image from 'next/image';
+import { ImagePlus, Trash } from 'lucide-react';
 
-interface ImageUploadInterface{
-    disabled: boolean,
-    onCancel: (value: string) => void,
-    onChange: (value: string) => void,
-    values?: string[]
+interface ImageUploadProps {
+  disabled?: boolean;
+  onChange: (value: string) => void;
+  onRemove: (value: string) => void;
+  value: string[];
 }
 
-const ImageUpload: React.FC<ImageUploadInterface> = ({
-    disabled,
-    onCancel,
-    onChange,
-    values
+const ImageUpload: React.FC<ImageUploadProps> = ({
+  disabled,
+  onChange,
+  onRemove,
+  value
 }) => {
-  
-    const handleUpload = useCallback((result: any) => {
-        onChange(result?.info.secure_url)
-    },[onChange])
+  const [isMounted, setIsMounted] = useState(false);
 
-  return (
-    <div> 
-        <div>
-        {
-            values?.map(value => (
-            <div
-                key={value}
-                className='
-                w-[200px]
-                h-[200px]
-                rounded-lg 
-                relative
-                hover:opacity-75
-                mb-4
-                '>
-                <div className='
-                absolute 
-                top-2 
-                right-2
-                z-10
-                '>
-                    <Button 
-                    type='button'
-                    size='icon'
-                    variant='destructive'
-                    onClick={()=> onCancel(value)}>
-                    <Trash 
-                    className='w-4 h-4'
-                    />
-                    </Button>
-                </div>
-                <Image
-                alt='upload'
-                fill
-                src={value}
-                className='object-cover mb-4 rounded-sm'
-                />
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const onUpload = (result: any) => {
+    onChange(result.info.secure_url);
+  };
+
+  if (!isMounted) {
+    return null;
+  }
+
+  return ( 
+    <div>
+      <div className="mb-4 flex items-center gap-4">
+        {value.map((url) => (
+          <div key={url} className="relative w-[200px] h-[200px] rounded-md overflow-hidden">
+            <div className="z-10 absolute top-2 right-2">
+              <Button type="button" onClick={() => onRemove(url)} variant="destructive" size="sm">
+                <Trash className="h-4 w-4" />
+              </Button>
             </div>
+            <Image
+              fill
+              className="object-cover"
+              alt="Image"
+              src={url}
+            />
+          </div>
         ))}
-        </div> 
-        <CldUploadWidget
-        onUpload={handleUpload} uploadPreset='njx1dxbk'>
-            {({ open }) => {
-                const handleOnClick = () => {
-                open();
-                }
-                return (
-                    <Button
-                    variant='secondary'
-                    disabled={disabled}
-                    onClick={handleOnClick}
-                    >
-                        <ImagePlus className={cn('w-4 h-4 mr-2', values && "mt-2")} />
-                        Uplaod Image
-                    </Button>
-                );
-            }}
-        </CldUploadWidget>
-    </div>
-  )
-}
+      </div>
+      <CldUploadWidget onUpload={onUpload} uploadPreset="njx1dxbk">
+        {({ open }) => {
+          const onClick = () => {
+            open();
+          };
 
-export default ImageUpload
+          return (
+            <Button 
+              type="button" 
+              disabled={disabled} 
+              variant="secondary" 
+              onClick={onClick}
+            >
+              <ImagePlus className="h-4 w-4 mr-2" />
+              Upload an Image
+            </Button>
+          );
+        }}
+      </CldUploadWidget>
+    </div>
+  );
+}
+ 
+export default ImageUpload;
