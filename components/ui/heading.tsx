@@ -3,12 +3,12 @@ import React from 'react'
 
 interface HeadingInterface{
     title: string,
-    subtitle: string
+    description: string
 }
 
 const Heading: React.FC<HeadingInterface> = ({
     title,
-    subtitle
+    description
 }) => {
   return (
     <div>
@@ -16,7 +16,7 @@ const Heading: React.FC<HeadingInterface> = ({
             {title}
         </div>
         <div className='text-sm text-muted-foreground'>
-            {subtitle}
+            {description}
         </div>
     </div>
   )
