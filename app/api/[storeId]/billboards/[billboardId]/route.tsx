@@ -93,7 +93,7 @@ export async function DELETE(request: Request,
         if(!userId) return new NextResponse("Unauthenticated", {status: 403})
         if(!params.billboardId) return new NextResponse("BillboardId is required", {status: 400})
 
-        const storeByUserId = await prismadb.store.findUnique({
+        const storeByUserId = await prismadb.store.findFirst({
             where:{
                 id: params.storeId,
                 userId
